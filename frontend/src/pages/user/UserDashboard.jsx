@@ -304,26 +304,68 @@ const UserDashboard = () => {
       setMessage("");
 
       if (!userLocation) {
-        setMessage("Please enable location access");
+        setMessage("Please enable location access first");
         toast.error("Location access required");
         return;
       }
 
       if (!capturedImage) {
-        setMessage("Please take a photo");
+        setMessage("Please take a photo using the camera above");
         toast.error("Photo required");
         return;
       }
 
+      // Convert base64 image to Blob
+      const base64Data = capturedImage.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, { type: 'image/jpeg' });
+      const imageFile = new File([blob], 'attendance-photo.jpg', { type: 'image/jpeg' });
+
       // Create FormData
       const formData = new FormData();
-      formData.append('image', capturedImage);
-      formData.append('location', JSON.stringify(userLocation));
+      formData.append('image', imageFile);
+      
+      // Parse location string if it's a string
+      let locationData;
+      if (typeof userLocation === 'string') {
+        try {
+          locationData = JSON.parse(userLocation);
+        } catch (e) {
+          locationData = {
+            coordinates: {
+              latitude: parseFloat(userLocation.split(',')[0].split(':')[1].trim()),
+              longitude: parseFloat(userLocation.split(',')[1].split(':')[1].trim())
+            },
+            address: userLocation,
+            lastUpdated: new Date().toISOString()
+          };
+        }
+      } else {
+        locationData = userLocation;
+      }
+
+      formData.append('location', JSON.stringify(locationData));
 
       // Add mobile-specific headers
       if (isMobile) {
         formData.append('device', 'mobile');
       }
+
+      console.log('Sending attendance data:', {
+        image: imageFile,
+        location: locationData,
+        device: isMobile ? 'mobile' : 'desktop'
+      });
 
       const response = await markAttendance(formData);
       console.log('Attendance response:', response);
@@ -704,7 +746,7 @@ const UserDashboard = () => {
                               !isWebcamReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
                             } text-white`}
                           >
-                            {!isWebcamReady ? 'Initializing Camera...' : 'Capture Image'}
+                            {!isWebcamReady ? 'Initializing Camera...' : 'Take Photo'}
                           </button>
                         </>
                       ) : (
@@ -721,7 +763,7 @@ const UserDashboard = () => {
                             }}
                             className="w-full py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700"
                           >
-                            Retake Image
+                            Retake Photo
                           </button>
                         </div>
                       )}
@@ -795,11 +837,11 @@ const UserDashboard = () => {
               </button>
 
               {message && (
-                <p className={`text-xs sm:text-sm ${
-                  message.includes('success') ? 'text-green-600' : 'text-red-600'
+                <div className={`p-3 rounded-lg ${
+                  message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
                 }`}>
-                  {message}
-                </p>
+                  <p className="text-sm">{message}</p>
+                </div>
               )}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api/notifications';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Get token from localStorage
 const getAuthToken = () => {
@@ -32,7 +32,7 @@ api.interceptors.request.use(
 // Admin: Send a notification
 export const sendNotification = async (notificationData) => {
   try {
-    const response = await api.post('/', notificationData);
+    const response = await api.post('/notifications', notificationData);
     return response.data;
   } catch (error) {
     throw error;
@@ -43,7 +43,7 @@ export const sendNotification = async (notificationData) => {
 export const getLatestNotification = async () => {
   try {
     console.log('Making API call to get latest notification');
-    const response = await api.get('/latest');
+    const response = await api.get('/notifications/latest');
     console.log('Latest notification API response:', response.data);
     return response.data;
   } catch (error) {
@@ -56,7 +56,7 @@ export const getLatestNotification = async () => {
 export const markNotificationAsRead = async (notificationId) => {
   try {
     console.log('Marking notification as read:', notificationId);
-    const response = await api.put(`/${notificationId}/read`);
+    const response = await api.put(`/notifications/${notificationId}/read`);
     console.log('Mark as read response:', response.data);
     return response.data;
   } catch (error) {
@@ -67,7 +67,7 @@ export const markNotificationAsRead = async (notificationId) => {
 
 export const getActiveNotifications = async () => {
   try {
-    const response = await api.get('/active');
+    const response = await api.get('/notifications/active');
     return response.data;
   } catch (error) {
     throw error;
@@ -76,7 +76,7 @@ export const getActiveNotifications = async () => {
 
 export const createNotification = async (notificationData) => {
   try {
-    const response = await api.post('/', notificationData);
+    const response = await api.post('/notifications', notificationData);
     return response.data;
   } catch (error) {
     throw error;
@@ -85,7 +85,7 @@ export const createNotification = async (notificationData) => {
 
 export const getAllNotifications = async () => {
   try {
-    const response = await api.get('/');
+    const response = await api.get('/notifications');
     return response.data;
   } catch (error) {
     throw error;
@@ -94,7 +94,7 @@ export const getAllNotifications = async () => {
 
 export const updateNotificationStatus = async (id, isActive) => {
   try {
-    const response = await api.put(`/${id}/status`, { isActive });
+    const response = await api.put(`/notifications/${id}/status`, { isActive });
     return response.data;
   } catch (error) {
     throw error;
@@ -103,7 +103,7 @@ export const updateNotificationStatus = async (id, isActive) => {
 
 export const deleteNotification = async (id) => {
   try {
-    const response = await api.delete(`/${id}`);
+    const response = await api.delete(`/notifications/${id}`);
     return response.data;
   } catch (error) {
     throw error;

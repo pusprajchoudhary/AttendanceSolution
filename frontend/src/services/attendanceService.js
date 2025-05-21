@@ -4,7 +4,7 @@ import api from './api';
 import { startLocationTracking } from './locationService';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Helper function to get auth header
 const getAuthHeader = () => {
@@ -185,12 +185,26 @@ export const exportAttendance = async (startDate, endDate) => {
 // Update location for attendance
 export const updateAttendanceLocation = async (locationData) => {
   try {
-    const response = await axios.put(`${API_URL}/attendance/location`, locationData, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+    // Format location data
+    const formattedLocation = {
+      coordinates: {
+        latitude: parseFloat(locationData.coordinates.latitude),
+        longitude: parseFloat(locationData.coordinates.longitude)
+      },
+      address: locationData.address || `${locationData.coordinates.latitude}, ${locationData.coordinates.longitude}`,
+      lastUpdated: new Date().toISOString()
+    };
+
+    const response = await axios.put(
+      `${API_URL}/attendance/location/update`,
+      formattedLocation,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error('Error updating attendance location:', error);
