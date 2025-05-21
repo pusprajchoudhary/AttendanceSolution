@@ -19,7 +19,7 @@ if (!fs.existsSync(uploadsDir)) {
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
-const leaveRoutes = require('./routes/leaveRoutes');
+const leaveRoutes = require('./routes/LeaveRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const messageRoutes = require('./routes/messageRoutes');
