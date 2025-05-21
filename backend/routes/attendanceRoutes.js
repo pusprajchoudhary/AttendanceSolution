@@ -91,7 +91,7 @@ router.put('/:id/location', protect, updateAttendanceLocation);
 router.get('/:userId/location-history', protect, admin, getUserLocationHistory);
 
 // PUT: Update attendance location (for periodic updates)
-router.put('/location', protect, require('../controllers/attendanceController').updateAttendanceLocation);
+router.put('/update-location', protect, updateAttendanceLocation);
 
 // Error handling middleware
 router.use(handleMulterError);
