@@ -33,7 +33,7 @@ app.use(cors({
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:5176',
-    'https://attendancepro.vercel.app'  // Your Vercel frontend domain
+    'https://attendancepro-weld.vercel.app'  // Your Vercel frontend domain
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
