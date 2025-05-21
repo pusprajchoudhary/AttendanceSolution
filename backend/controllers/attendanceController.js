@@ -1,5 +1,5 @@
 const Attendance = require('../models/AttendanceModel');
-const User = require('../models/userModel');
+const User = require('../models/UserModel');
 const ExcelJS = require('exceljs');
 const mongoose = require('mongoose');
 const axios = require('axios');
