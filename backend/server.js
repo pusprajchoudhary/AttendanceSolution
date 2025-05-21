@@ -56,6 +56,7 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 // Connect to MongoDB with retry mechanism
 let isConnecting = false;
 let server = null;
+let mongoConnected = false;
 
 const startServer = async () => {
   if (isConnecting) return;
@@ -67,27 +68,31 @@ const startServer = async () => {
       throw new Error('MONGO_URI is not defined in environment variables');
     }
 
+    // Connect to MongoDB
     await connectDB();
+    mongoConnected = true;
     console.log('MongoDB connected successfully');
     
-    const PORT = process.env.PORT || 5000;
-    server = app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      isConnecting = false;
-    });
+    // Start the server only if MongoDB is connected
+    if (mongoConnected) {
+      const PORT = process.env.PORT || 5000;
+      server = app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        isConnecting = false;
+      });
 
-    // Handle server errors
-    server.on('error', (error) => {
-      console.error('Server error:', error);
-      if (error.code === 'EADDRINUSE') {
-        console.log('Port is already in use. Retrying with a different port...');
-        server.close();
-        setTimeout(() => {
-          startServer();
-        }, 5000);
-      }
-    });
-
+      // Handle server errors
+      server.on('error', (error) => {
+        console.error('Server error:', error);
+        if (error.code === 'EADDRINUSE') {
+          console.log('Port is already in use. Retrying with a different port...');
+          server.close();
+          setTimeout(() => {
+            startServer();
+          }, 5000);
+        }
+      });
+    }
   } catch (err) {
     console.error('Failed to start server:', err);
     isConnecting = false;
@@ -105,6 +110,15 @@ app.use('/api/policies', policyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/holidays', holidayRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    mongodb: mongoConnected ? 'connected' : 'disconnected',
+    uptime: process.uptime()
+  });
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
