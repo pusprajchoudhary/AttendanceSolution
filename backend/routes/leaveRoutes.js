@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Leave = require('../models/leaveModel');
+const Leave = require('../models/LeaveModel');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // Apply for leave
