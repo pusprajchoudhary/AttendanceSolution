@@ -33,8 +33,7 @@ app.use(cors({
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:5176',
-    'https://your-frontend-domain.vercel.app', // Add your frontend domain here
-    'https://your-frontend-domain.netlify.app'  // Add your frontend domain here
+    'https://attendancepro.vercel.app'  // Your Vercel frontend domain
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
