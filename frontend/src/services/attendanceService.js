@@ -4,15 +4,15 @@ import api from './api';
 import { startLocationTracking } from './locationService';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api';
 
-// Add auth token to requests
+// Helper function to get auth header
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
   return {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     }
   };
 };
@@ -21,6 +21,13 @@ const getAuthHeader = () => {
 export const markAttendance = async (formData) => {
   try {
     console.log('Marking attendance with data:', formData);
+    
+    // Check if we're on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // Adjust timeout for mobile devices
+    const timeout = isMobile ? 30000 : 10000; // 30 seconds for mobile, 10 for desktop
+    
     const response = await axios.post(
       `${API_URL}/attendance/mark`,
       formData,
@@ -28,13 +35,32 @@ export const markAttendance = async (formData) => {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        },
+        timeout: timeout,
+        // Add retry logic for mobile
+        retry: isMobile ? 3 : 1,
+        retryDelay: 1000
       }
     );
+    
     console.log('Attendance marked successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error marking attendance:', error);
+    
+    // Enhanced error handling for mobile
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Request timed out. Please check your internet connection and try again.');
+    }
+    
+    if (!navigator.onLine) {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+    
+    if (error.response?.status === 413) {
+      throw new Error('Image size too large. Please try with a smaller image.');
+    }
+    
     throw error;
   }
 };

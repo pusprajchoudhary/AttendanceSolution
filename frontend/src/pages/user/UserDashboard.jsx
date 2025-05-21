@@ -36,6 +36,12 @@ const UserDashboard = () => {
   const [hoursWorked, setHoursWorked] = useState(0);
   const [locationTrackingStopper, setLocationTrackingStopper] = useState(null);
 
+  // Add mobile detection
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  // Add network status check
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   useEffect(() => {
     const checkAuth = async () => {
       if (!loading) {
@@ -158,6 +164,19 @@ const UserDashboard = () => {
     return () => clearInterval(locationInterval);
   }, [user, navigate]);
 
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const handleLogout = () => {
     logoutUser();
     navigate('/login', { replace: true });
@@ -274,73 +293,37 @@ const UserDashboard = () => {
   };
 
   const handleCheckIn = async () => {
+    if (!isOnline) {
+      setMessage("No internet connection. Please check your network and try again.");
+      toast.error("No internet connection");
+      return;
+    }
+
     try {
       setIsLoading(true);
       setMessage("");
 
-      // First ensure camera is enabled
-      if (!isCameraEnabled) {
-        await enableCamera();
-        if (!isCameraEnabled) {
-          setMessage("Please enable camera first");
-          return;
-        }
-      }
-
-      // Check if we have a captured image
-      if (!capturedImage) {
-        setMessage("Please capture your image first");
-        return;
-      }
-
-      if (!isLocationEnabled) {
+      if (!userLocation) {
         setMessage("Please enable location access");
+        toast.error("Location access required");
         return;
       }
 
-      // Get current location
-      let currentLocation;
-      try {
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        
-        currentLocation = {
-          coordinates: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          },
-          address: `${position.coords.latitude}, ${position.coords.longitude}`,
-          lastUpdated: new Date().toISOString()
-        };
-      } catch (error) {
-        console.error('Error getting location:', error);
-        setMessage("Failed to get location");
+      if (!capturedImage) {
+        setMessage("Please take a photo");
+        toast.error("Photo required");
         return;
       }
 
-      // Convert base64 to blob
-      const base64Response = await fetch(capturedImage);
-      const blob = await base64Response.blob();
-      
-      // Create a File object from the blob
-      const file = new File([blob], `attendance_${user._id}_${Date.now()}.jpg`, {
-        type: 'image/jpeg'
-      });
-
-      // Create FormData and append all fields
+      // Create FormData
       const formData = new FormData();
-      formData.append('image', file);
-      formData.append('location[coordinates][latitude]', currentLocation.coordinates.latitude);
-      formData.append('location[coordinates][longitude]', currentLocation.coordinates.longitude);
-      formData.append('location[address]', currentLocation.address);
-      formData.append('location[lastUpdated]', currentLocation.lastUpdated);
+      formData.append('image', capturedImage);
+      formData.append('location', JSON.stringify(userLocation));
 
-      console.log('Submitting attendance with:', {
-        hasImage: formData.has('image'),
-        hasLocation: formData.has('location[coordinates][latitude]'),
-        location: currentLocation
-      });
+      // Add mobile-specific headers
+      if (isMobile) {
+        formData.append('device', 'mobile');
+      }
 
       const response = await markAttendance(formData);
       console.log('Attendance response:', response);
@@ -353,6 +336,7 @@ const UserDashboard = () => {
       setShowCamera(false);
       setMessage("Attendance marked successfully!");
       toast.success('Attendance marked successfully!');
+
       // Start periodic location tracking after successful check-in
       const tracker = await startLocationTracking(async (locationData) => {
         try {
@@ -360,6 +344,7 @@ const UserDashboard = () => {
           console.log('Location update sent to backend:', locationData);
         } catch (error) {
           console.error('Error sending location update:', error);
+          // Don't show error toast for location updates to avoid spam
         }
       });
       tracker.start();
@@ -616,6 +601,14 @@ const UserDashboard = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
+        {/* Network Status Indicator */}
+        {!isOnline && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong className="font-bold">No Internet Connection!</strong>
+            <span className="block sm:inline"> Please check your network and try again.</span>
+          </div>
+        )}
+
         {/* Welcome Card with Live Time */}
         <div className="bg-red-600 text-white p-4 sm:p-6 rounded-xl shadow-md">
           <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Welcome back, {user?.name}!</h2>

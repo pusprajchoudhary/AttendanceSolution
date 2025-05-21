@@ -47,7 +47,8 @@ const markAttendance = async (req, res) => {
     console.log('Received attendance request:', {
       body: req.body,
       file: req.file,
-      user: req.user
+      user: req.user,
+      device: req.body.device || 'desktop'
     });
 
     // Check if user is authenticated
@@ -66,8 +67,11 @@ const markAttendance = async (req, res) => {
       try {
         parsedLocation = JSON.parse(location);
       } catch (e) {
-        // If parsing fails, fallback to old structure
-        parsedLocation = null;
+        console.error('Error parsing location:', e);
+        return res.status(400).json({ 
+          message: 'Invalid location format',
+          details: 'Location data is not properly formatted'
+        });
       }
     } else if (
       req.body['location[coordinates][latitude]'] &&
@@ -87,18 +91,29 @@ const markAttendance = async (req, res) => {
       parsedLocation = location;
     }
 
-    // Validate required fields
-    if (!parsedLocation || !photo) {
-      console.log('Missing required fields:', {
-        location: !parsedLocation ? 'missing' : 'present',
-        photo: !photo ? 'missing' : 'present'
-      });
+    // Validate required fields with detailed error messages
+    const errors = [];
+    if (!parsedLocation) {
+      errors.push('Location is required');
+    }
+    if (!photo) {
+      errors.push('Photo is required');
+    }
+
+    if (errors.length > 0) {
       return res.status(400).json({ 
-        message: 'Location and photo are required',
-        details: {
-          location: !parsedLocation ? 'Location is required' : undefined,
-          photo: !photo ? 'Photo is required' : undefined
-        }
+        message: 'Missing required fields',
+        details: errors
+      });
+    }
+
+    // Validate location data
+    if (!parsedLocation.coordinates || 
+        !parsedLocation.coordinates.latitude || 
+        !parsedLocation.coordinates.longitude) {
+      return res.status(400).json({
+        message: 'Invalid location data',
+        details: 'Location coordinates are missing or invalid'
       });
     }
 
@@ -126,10 +141,16 @@ const markAttendance = async (req, res) => {
     }
 
     // Get human-readable address from coordinates
-    const address = await getAddressFromCoordinates(
-      parsedLocation.coordinates.latitude,
-      parsedLocation.coordinates.longitude
-    );
+    let address;
+    try {
+      address = await getAddressFromCoordinates(
+        parsedLocation.coordinates.latitude,
+        parsedLocation.coordinates.longitude
+      );
+    } catch (error) {
+      console.error('Error getting address:', error);
+      address = `${parsedLocation.coordinates.latitude}, ${parsedLocation.coordinates.longitude}`;
+    }
 
     // Create a new attendance record
     const newAttendance = new Attendance({
@@ -146,13 +167,15 @@ const markAttendance = async (req, res) => {
       timestamp: new Date(),
       status: 'checked-in',
       hoursWorked: 0,
-      checkOutTime: null
+      checkOutTime: null,
+      device: req.body.device || 'desktop'
     });
 
     console.log('Creating new attendance record:', {
       user: newAttendance.user,
       timestamp: newAttendance.timestamp,
-      status: newAttendance.status
+      status: newAttendance.status,
+      device: newAttendance.device
     });
 
     await newAttendance.save();
