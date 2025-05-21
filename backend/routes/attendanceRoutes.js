@@ -59,7 +59,7 @@ const handleMulterError = (err, req, res, next) => {
   next(err);
 };
 
-// POST: Mark attendance with photo upload
+// Base routes
 router.post('/mark', 
   protect, 
   upload.single('image'),
@@ -72,26 +72,15 @@ router.post('/mark',
   markAttendance
 );
 
-// POST: Mark checkout
 router.post('/checkout', protect, markCheckout);
-
-// GET: Get attendance data for a specific date
-router.get('/date/:date', protect, getAttendanceByDate);
-
-// GET: Export attendance data to Excel
+router.get('/today', protect, getTodayAttendance);
 router.get('/export', protect, exportAttendance);
 
-// GET: Get today's attendance
-router.get('/today', protect, getTodayAttendance);
-
-// PUT: Update attendance location
-router.put('/:id/location', protect, updateAttendanceLocation);
-
-// GET: Get location history for a user for today (admin only)
-router.get('/:userId/location-history', protect, admin, getUserLocationHistory);
-
-// PUT: Update attendance location (for periodic updates)
-router.put('/update-location', protect, updateAttendanceLocation);
+// Routes with parameters
+router.get('/date/:date', protect, getAttendanceByDate);
+router.get('/user/:userId/location-history', protect, admin, getUserLocationHistory);
+router.put('/record/:id/location', protect, updateAttendanceLocation);
+router.put('/location/update', protect, updateAttendanceLocation);
 
 // Error handling middleware
 router.use(handleMulterError);

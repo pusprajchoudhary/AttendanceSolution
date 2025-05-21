@@ -16,13 +16,14 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Import routes
-const attendanceRoutes = require('./routes/attendanceRoutes');
-const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 const leaveRoutes = require('./routes/leaveRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const holidayRoutes = require('./routes/holidayRoutes');
 
 const app = express();
 
@@ -96,13 +97,14 @@ const startServer = async () => {
 };
 
 // Routes
-app.use('/api/attendance', attendanceRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/policies', policyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/holidays', holidayRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
