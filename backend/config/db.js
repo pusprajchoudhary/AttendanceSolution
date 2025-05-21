@@ -9,22 +9,34 @@ const connectDB = async () => {
 
   const connectWithRetry = async () => {
     try {
+      // Log the MongoDB URI (without sensitive information)
+      const mongoUri = process.env.MONGO_URI;
+      if (!mongoUri) {
+        throw new Error('MONGO_URI is not defined in environment variables');
+      }
+      console.log('Attempting to connect to MongoDB...');
+
       const options = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 10000,
+        serverSelectionTimeoutMS: 30000, // Increased timeout
         socketTimeoutMS: 45000,
         family: 4,
         maxPoolSize: 10,
         minPoolSize: 5,
         retryWrites: true,
-        w: 'majority'
+        w: 'majority',
+        heartbeatFrequencyMS: 2000,
+        connectTimeoutMS: 30000,
+        keepAlive: true,
+        keepAliveInitialDelay: 300000
       };
 
-      await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/attendance-system', options);
+      await mongoose.connect(mongoUri, options);
       console.log('MongoDB connected successfully');
     } catch (error) {
       console.error('MongoDB connection failed:', error.message);
+      console.error('Full error:', error);
       
       if (retryCount < maxRetries) {
         retryCount++;
@@ -33,7 +45,8 @@ const connectDB = async () => {
         setTimeout(connectWithRetry, delay);
       } else {
         console.error('Max retries reached. Could not connect to MongoDB');
-        process.exit(1);
+        // Don't exit the process, just log the error
+        console.error('Please check your MongoDB connection string and network connectivity');
       }
     }
   };
@@ -41,6 +54,7 @@ const connectDB = async () => {
   // Set up event listeners for connection
   mongoose.connection.on('connected', () => {
     console.log('Mongoose connected to MongoDB');
+    retryCount = 0; // Reset retry count on successful connection
   });
 
   mongoose.connection.on('error', (err) => {
