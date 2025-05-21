@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api';
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -23,7 +23,7 @@ const getUserId = () => {
 
 // Configure axios with auth header
 const axiosWithAuth = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com',
   headers: {
     'Content-Type': 'application/json'
   }
