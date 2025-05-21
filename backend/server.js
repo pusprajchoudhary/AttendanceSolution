@@ -52,22 +52,28 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from uploads directory
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Connect to MongoDB
-connectDB().then(() => {
-  console.log('MongoDB connected successfully');
-}).catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+// Connect to MongoDB with retry mechanism
+let isConnecting = false;
+const startServer = async () => {
+  if (isConnecting) return;
+  isConnecting = true;
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({
-    message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+  try {
+    await connectDB();
+    console.log('MongoDB connected successfully');
+    
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+      isConnecting = false;
+    });
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    isConnecting = false;
+    // Retry after 5 seconds
+    setTimeout(startServer, 5000);
+  }
+};
 
 // Routes
 app.use('/api/attendance', attendanceRoutes);
@@ -78,18 +84,29 @@ app.use('/api/policies', policyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Promise Rejection:', err);
+  // Don't exit the process, just log the error
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
-  process.exit(1);
+  // Give time for logging before exit
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
 });
+
+// Start the server
+startServer();
