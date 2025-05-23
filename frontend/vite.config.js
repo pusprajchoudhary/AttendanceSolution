@@ -21,8 +21,17 @@ export default defineConfig({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
         },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'index.html') {
+            return 'index.html';
+          }
+          return 'assets/[name].[hash][extname]';
+        },
+        chunkFileNames: 'assets/[name].[hash].js',
+        entryFileNames: 'assets/[name].[hash].js',
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     port: 3000,
