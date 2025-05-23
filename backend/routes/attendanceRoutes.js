@@ -78,7 +78,7 @@ router.get('/export', protect, exportAttendance);
 
 // Routes with parameters
 router.get('/date/:date', protect, getAttendanceByDate);
-router.get('/user/:userId/location-history', protect, admin, getUserLocationHistory);
+router.get('/:userId/location-history', protect, admin, getUserLocationHistory);
 router.put('/location/:recordId', protect, updateAttendanceLocation);
 
 // Error handling middleware

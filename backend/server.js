@@ -1,9 +1,9 @@
 const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
 const connectDB = require('./config/db');
+const corsMiddleware = require('./config/cors');
 
 // Load environment variables
 dotenv.config();
@@ -27,24 +27,11 @@ const holidayRoutes = require('./routes/holidayRoutes');
 
 const app = express();
 
-// CORS configuration
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'http://localhost:5176',
-    'https://attendancepro-weld.vercel.app'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 86400 // 24 hours
-}));
+// Apply CORS middleware
+app.use(corsMiddleware);
 
-// Add preflight handling
-app.options('*', cors());
+// Handle preflight requests
+app.options('*', corsMiddleware);
 
 // Middleware
 app.use(express.json());
@@ -78,6 +65,7 @@ const startServer = async () => {
       const PORT = process.env.PORT || 5000;
       server = app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
         isConnecting = false;
       });
 
@@ -116,9 +104,19 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     mongodb: mongoConnected ? 'connected' : 'disconnected',
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

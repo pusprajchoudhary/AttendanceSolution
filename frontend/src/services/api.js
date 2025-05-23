@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api';
+const API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://attendance-solution-backend.onrender.com/api'
+  : 'http://localhost:5000/api';
 
 // Create axios instance with default config
 const api = axios.create({

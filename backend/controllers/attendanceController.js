@@ -622,6 +622,8 @@ const markCheckout = async (req, res) => {
 const getUserLocationHistory = async (req, res) => {
   try {
     const userId = req.params.userId;
+    console.log('Fetching location history for user:', userId);
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -631,19 +633,52 @@ const getUserLocationHistory = async (req, res) => {
     const attendance = await Attendance.findOne({
       user: userId,
       timestamp: { $gte: today, $lt: tomorrow }
-    });
+    }).populate('user', 'name email');
 
     if (!attendance) {
-      return res.status(404).json({ message: 'No attendance record found for today.' });
+      console.log('No attendance record found for today, returning empty history');
+      return res.json({
+        user: {
+          _id: userId,
+          name: 'User',
+          email: 'user@example.com'
+        },
+        locationHistory: []
+      });
     }
 
+    // Get location history from the attendance record
+    const locationHistory = attendance.locationHistory || [];
+    if (attendance.location) {
+      locationHistory.push({
+        coordinates: attendance.location.coordinates,
+        address: attendance.location.address,
+        lastUpdated: attendance.location.lastUpdated
+      });
+    }
+
+    console.log('Location history found:', {
+      userId,
+      count: locationHistory.length,
+      history: locationHistory
+    });
+
     res.json({
-      user: attendance.user,
-      locationHistory: attendance.locationHistory || []
+      user: {
+        _id: attendance.user._id,
+        name: attendance.user.name,
+        email: attendance.user.email
+      },
+      locationHistory: locationHistory.sort((a, b) => 
+        new Date(b.lastUpdated) - new Date(a.lastUpdated)
+      )
     });
   } catch (error) {
     console.error('Error fetching user location history:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      message: 'Error fetching location history',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

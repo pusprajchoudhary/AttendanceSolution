@@ -33,23 +33,34 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  console.log('Login attempt:', { email, password: '***' });
+  
   try {
     const user = await User.findOne({ email });
+    console.log('User found:', user ? { ...user.toObject(), password: '***' } : 'No user found');
+    
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      console.log('Login failed: User not found');
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // Check if user is blocked
     if (user.isBlocked) {
+      console.log('Login failed: User is blocked');
       return res.status(403).json({ message: 'Your account has been blocked. Please contact the administrator.' });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    console.log('Password check result:', isPasswordCorrect);
+    
     if (!isPasswordCorrect) {
+      console.log('Login failed: Invalid password');
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const token = generateToken(user._id, user.role);
+    console.log('Login successful, token generated');
+    
     res.json({
       user: {
         _id: user._id,
@@ -62,6 +73,7 @@ const loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
