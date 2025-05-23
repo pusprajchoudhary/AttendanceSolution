@@ -27,6 +27,10 @@
       "dest": "/robots.txt"
     },
     {
+      "src": "/admin/dashboard",
+      "dest": "/index.html"
+    },
+    {
       "src": "/admin/(.*)",
       "dest": "/index.html"
     },
