@@ -1,7 +1,6 @@
 const cors = require('cors');
 
 const allowedOrigins = [
-  'http://localhost:3000',
   'https://attendancepro-weld.vercel.app',
   'https://attendance-solution-frontend.vercel.app',
   'https://attendance-solution.vercel.app'
