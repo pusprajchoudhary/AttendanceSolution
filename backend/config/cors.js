@@ -3,7 +3,8 @@ const cors = require('cors');
 const allowedOrigins = [
   'https://attendancepro-weld.vercel.app',
   'https://attendance-solution-frontend.vercel.app',
-  'https://attendance-solution.vercel.app'
+  'https://attendance-solution.vercel.app',
+  'https://lively-kashata-d2eb26.netlify.app'
 ];
 
 const corsOptions = {
