@@ -527,7 +527,7 @@ const AdminDashboard = () => {
                           <div className="flex items-start space-x-4">
                             <div className="w-16 h-16 rounded-lg overflow-hidden">
                               <img 
-                                src={`http://localhost:5000/api/uploads/${log.photo}`} 
+                                src={`${import.meta.env.VITE_API_URL}/uploads/${log.photo}`} 
                                 alt={`${log.user?.name}'s attendance`}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
