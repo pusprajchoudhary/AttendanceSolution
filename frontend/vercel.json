@@ -43,7 +43,7 @@
       "dest": "/index.html"
     },
     {
-      "src": "/(.*)",
+      "src": "/(.*)", 
       "dest": "/index.html"
     }
   ],
@@ -68,5 +68,5 @@
     }
   ],
   "trailingSlash": false,
-  "cleanUrls": true
+  "cleanUrls": false
 } 
