@@ -3,6 +3,7 @@
 import api from './api';
 import { startLocationTracking } from './locationService';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -138,9 +139,10 @@ export const getAttendanceHistory = async () => {
 
 export const getAttendanceByDate = async (date) => {
   try {
-    console.log('Fetching attendance for date:', date);
+    const formattedDate = format(new Date(date), 'yyyy-MM-dd');
+    console.log('Fetching attendance for date:', formattedDate);
     const response = await axios.get(
-      `${API_URL}/attendance/date/${date}`,
+      `${API_URL}/attendance/date/${formattedDate}`,
       getAuthHeader()
     );
     console.log('Attendance for date:', response.data);
