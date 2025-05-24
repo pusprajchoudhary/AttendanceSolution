@@ -18,6 +18,12 @@ const connectDB = async () => {
       // Log connection attempt
       console.log('Attempting to connect to MongoDB...');
       console.log('Connection URI format:', mongoUri.split('@')[1] ? 'Valid' : 'Invalid');
+      console.log('Environment variables loaded:', {
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT,
+        JWT_SECRET: process.env.JWT_SECRET ? 'Set' : 'Not set',
+        MONGO_URI: mongoUri.split('@')[0] + '@' + mongoUri.split('@')[1].split('/')[0] + '/...'
+      });
 
       const options = {
         useNewUrlParser: true,
@@ -47,18 +53,15 @@ const connectDB = async () => {
       console.log('MongoDB connected successfully');
       retryCount = 0; // Reset retry count on successful connection
     } catch (error) {
-      console.error('MongoDB connection failed:', error.message);
-      console.error('Full error:', error);
+      console.error('MongoDB connection error:', error);
+      retryCount++;
       
       if (retryCount < maxRetries) {
-        retryCount++;
-        const delay = Math.min(1000 * Math.pow(2, retryCount), 30000); // Exponential backoff with max 30s
-        console.log(`Retrying connection (${retryCount}/${maxRetries}) in ${delay/1000}s...`);
-        setTimeout(connectWithRetry, delay);
+        console.log(`Retrying connection (${retryCount}/${maxRetries})...`);
+        setTimeout(connectWithRetry, 5000);
       } else {
-        console.error('Max retries reached. Could not connect to MongoDB');
-        console.error('Please check your MongoDB connection string and network connectivity');
-        // Don't exit the process, just log the error
+        console.error('Max retries reached. Could not connect to MongoDB.');
+        process.exit(1);
       }
     }
   };

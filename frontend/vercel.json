@@ -1,12 +1,50 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
-      "source": "/admin/dashboard",
-      "destination": "/index.html"
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/robots.txt"
+    },
+    {
+      "src": "/admin/dashboard",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/dashboard/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -28,5 +66,7 @@
         }
       ]
     }
-  ]
+  ],
+  "trailingSlash": false,
+  "cleanUrls": true
 } 

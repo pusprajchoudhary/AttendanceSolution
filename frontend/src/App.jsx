@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -9,17 +9,31 @@ import BlockedUser from './pages/BlockedUser';
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
+  // If user is not authenticated and not on login page, redirect to login
+  if (!user && location.pathname !== '/login' && location.pathname !== '/blocked') {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
   return (
     <Routes>
-      {/* Root Route - Always redirect to login if not authenticated */}
+      {/* Root Route */}
       <Route 
         path="/" 
-        element={<Navigate to="/login" replace />}
+        element={
+          !user ? (
+            <Navigate to="/login" replace />
+          ) : user.role === 'admin' ? (
+            <Navigate to="/admin/dashboard" replace />
+          ) : (
+            <Navigate to="/dashboard" replace />
+          )
+        }
       />
 
       {/* Public Routes */}
@@ -44,7 +58,7 @@ const AppRoutes = () => {
 
       {/* Protected User Routes */}
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
           <ProtectedRoute allowedRoles={['user']}>
             <UserDashboard />
@@ -71,7 +85,7 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename="/">
         <AppRoutes />
       </Router>
     </AuthProvider>

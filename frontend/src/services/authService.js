@@ -1,15 +1,12 @@
 import axios from "axios";
 
-// Use environment variable for API URL or fallback to production URL
-const API_URL = import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api';
-
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://attendance-solution-backend.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true // Enable sending cookies
+  withCredentials: true
 });
 
 // Add request interceptor to add token to all requests
@@ -22,6 +19,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -30,6 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('Response error:', error);
     if (error.response?.status === 401) {
       // Token is invalid or expired
       localStorage.removeItem('token');
@@ -44,7 +43,11 @@ api.interceptors.response.use(
 // login
 export const login = async (credentials) => {
   try {
+    console.log('Attempting login with credentials:', { ...credentials, password: '***' });
+    console.log('Making request to:', api.defaults.baseURL + '/auth/login');
+    
     const response = await api.post('/auth/login', credentials);
+    console.log('Login response:', response.data);
     
     // Check if user is blocked before storing token
     if (response.data.user.isBlocked) {
@@ -61,9 +64,28 @@ export const login = async (credentials) => {
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      console.log('Token stored successfully');
+    } else {
+      console.warn('No token received in response');
     }
     return response.data;
   } catch (error) {
+    console.error('Login error:', error);
+    if (error.response) {
+      console.error('Error response data:', error.response.data);
+      console.error('Error response status:', error.response.status);
+      console.error('Error response headers:', error.response.headers);
+      // If we have a specific error message from the server, use it
+      if (error.response.data && error.response.data.message) {
+        throw new Error(error.response.data.message);
+      }
+    } else if (error.request) {
+      console.error('Error request:', error.request);
+      console.error('No response received from server');
+    } else {
+      console.error('Error message:', error.message);
+    }
+    
     // Handle blocked user error
     if (error.response?.status === 403) {
       // Clear any existing auth data
@@ -95,6 +117,7 @@ export const register = async (userData) => {
     }
     return response.data;
   } catch (error) {
+    console.error('Registration error:', error);
     throw error;
   }
 };
@@ -107,6 +130,7 @@ export const logout = async () => {
   } catch (error) {
     // If the endpoint is not found (404), we'll still proceed with local logout
     if (error.response?.status !== 404) {
+      console.error('Logout error:', error);
       throw error;
     }
   } finally {
@@ -126,6 +150,7 @@ export const getCurrentUser = async () => {
     const response = await api.get('/auth/me');
     return response.data;
   } catch (error) {
+    console.error('Get current user error:', error);
     return null;
   }
 };
