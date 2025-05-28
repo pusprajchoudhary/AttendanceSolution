@@ -289,7 +289,8 @@ const AdminDashboard = () => {
 
   const handleImageError = (e) => {
     e.target.onerror = null; // Prevent infinite loop
-    e.target.src = 'https://ui-avatars.com/api/?name=User&background=random'; // Fallback to avatar
+    const name = e.target.alt.split("'")[0] || 'User';
+    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`; // Fallback to avatar
   };
 
   const renderAttendanceTable = (logs) => {
@@ -335,7 +336,7 @@ const AdminDashboard = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <img
-                    src={log.photo}
+                    src={log.photo.startsWith('http') ? log.photo : `${import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api'}/uploads/${log.photo}`}
                     alt={`${log.user?.name}'s attendance photo`}
                     className="h-10 w-10 rounded-full object-cover"
                     onError={handleImageError}
@@ -605,7 +606,7 @@ const AdminDashboard = () => {
                           <div className="flex items-start space-x-4">
                             <div className="w-16 h-16 rounded-lg overflow-hidden">
                               <img 
-                                src={`http://localhost:5000/api/uploads/${log.photo}`} 
+                                src={log.photo.startsWith('http') ? log.photo : `${import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com/api'}/uploads/${log.photo}`}
                                 alt={`${log.user?.name}'s attendance`}
                                 className="w-full h-full object-cover"
                                 onError={handleImageError}
