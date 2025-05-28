@@ -258,7 +258,7 @@ const getAttendanceByDate = async (req, res) => {
         // Construct the full photo URL
         const photoUrl = log.photo.startsWith('http') 
           ? log.photo 
-          : `${process.env.API_URL || 'https://attendance-solution-backend.onrender.com'}/uploads/${log.photo}`;
+          : `${process.env.API_URL || 'https://attendance-solution-backend.onrender.com'}/api/uploads/${log.photo}`;
 
         return {
           ...log,
