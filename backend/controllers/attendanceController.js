@@ -243,7 +243,7 @@ const getAttendanceByDate = async (req, res) => {
 
     console.log('Found attendance logs:', attendanceLogs.length);
 
-    // Transform the data to include location history
+    // Transform the data to include location history and fix photo URLs
     const transformedLogs = attendanceLogs.map(log => {
       try {
         const locationHistory = [];
@@ -255,8 +255,14 @@ const getAttendanceByDate = async (req, res) => {
           });
         }
 
+        // Construct the full photo URL
+        const photoUrl = log.photo.startsWith('http') 
+          ? log.photo 
+          : `${process.env.API_URL || 'https://attendance-solution-backend.onrender.com'}/uploads/${log.photo}`;
+
         return {
           ...log,
+          photo: photoUrl,
           locationHistory
         };
       } catch (transformError) {
