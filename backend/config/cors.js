@@ -4,7 +4,9 @@ const allowedOrigins = [
   'https://attendancepro-weld.vercel.app',
   'https://attendance-solution-frontend.vercel.app',
   'https://attendance-solution.vercel.app',
-  'https://lively-kashata-d2eb26.netlify.app'
+  'https://lively-kashata-d2eb26.netlify.app',
+  'http://localhost:5173',  // Add local development URL
+  'http://localhost:3000'   // Add alternative local development URL
 ];
 
 const corsOptions = {
