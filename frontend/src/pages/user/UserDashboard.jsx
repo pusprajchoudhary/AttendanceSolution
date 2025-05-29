@@ -140,7 +140,14 @@ const UserDashboard = () => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            setUserLocation(`Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`);
+            setUserLocation({
+              coordinates: {
+                latitude: latitude,
+                longitude: longitude
+              },
+              address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+              lastUpdated: new Date().toISOString()
+            });
             setIsLocationEnabled(true);
             setMessage("Location enabled successfully");
           },
@@ -256,7 +263,14 @@ const UserDashboard = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setUserLocation(`Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`);
+          setUserLocation({
+            coordinates: {
+              latitude: latitude,
+              longitude: longitude
+            },
+            address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            lastUpdated: new Date().toISOString()
+          });
           setIsLocationEnabled(true);
           setMessage("Location enabled successfully");
         },
@@ -335,26 +349,8 @@ const UserDashboard = () => {
       const formData = new FormData();
       formData.append('image', imageFile);
       
-      // Parse location string if it's a string
-      let locationData;
-      if (typeof userLocation === 'string') {
-        try {
-          locationData = JSON.parse(userLocation);
-        } catch (e) {
-          locationData = {
-            coordinates: {
-              latitude: parseFloat(userLocation.split(',')[0].split(':')[1].trim()),
-              longitude: parseFloat(userLocation.split(',')[1].split(':')[1].trim())
-            },
-            address: userLocation,
-            lastUpdated: new Date().toISOString()
-          };
-        }
-      } else {
-        locationData = userLocation;
-      }
-
-      formData.append('location', JSON.stringify(locationData));
+      // Append location data as a JSON string
+      formData.append('location', JSON.stringify(userLocation));
 
       // Add mobile-specific headers
       if (isMobile) {
@@ -363,7 +359,7 @@ const UserDashboard = () => {
 
       console.log('Sending attendance data:', {
         image: imageFile,
-        location: locationData,
+        location: userLocation,
         device: isMobile ? 'mobile' : 'desktop'
       });
 
@@ -565,11 +561,14 @@ const UserDashboard = () => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
 
+      // Prepare location data as a structured object
       const locationData = {
         coordinates: {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
-        }
+        },
+        address: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`,
+        lastUpdated: new Date().toISOString()
       };
 
       await updateAttendanceLocation(locationData);
@@ -791,7 +790,7 @@ const UserDashboard = () => {
                   <div className="bg-gray-50 p-3 sm:p-4 rounded-lg space-y-2">
                     {isLocationEnabled ? (
                       <>
-                        <p className="text-xs sm:text-sm text-gray-600">{userLocation}</p>
+                        <p className="text-xs sm:text-sm text-gray-600">{userLocation.address}</p>
                         <p className="text-xs sm:text-sm text-gray-600">
                           {formatDateForDisplay(currentTime)}
                         </p>
