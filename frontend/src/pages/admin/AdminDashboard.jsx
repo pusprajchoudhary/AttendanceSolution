@@ -350,7 +350,7 @@ const AdminDashboard = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    log.status === 'checked-in' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    log.status === 'checked-in' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                   }`}>
                     {log.status}
                   </span>
@@ -395,7 +395,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="mt-4">
                   <span className="text-sm text-green-600">+{users.filter(u => !u.isBlocked).length} Active</span>
-                  <span className="text-sm text-red-600 ml-2">+{users.filter(u => u.isBlocked).length} Blocked</span>
+                  <span className="text-sm text-blue-600 ml-2">+{users.filter(u => u.isBlocked).length} Blocked</span>
                 </div>
               </div>
 
@@ -453,7 +453,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium text-gray-900">{user.role}</p>
-                      <p className={`text-xs ${user.isBlocked ? 'text-red-600' : 'text-green-600'}`}>
+                      <p className={`text-xs ${user.isBlocked ? 'text-blue-600' : 'text-green-600'}`}>
                         {user.isBlocked ? 'Blocked' : 'Active'}
                       </p>
                     </div>
@@ -537,7 +537,7 @@ const AdminDashboard = () => {
                     </td>
                       <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                          user.isBlocked ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                         }`}>
                           {user.isBlocked ? 'Blocked' : 'Active'}
                         </span>
@@ -547,9 +547,7 @@ const AdminDashboard = () => {
                           <button
                             onClick={() => handleToggleUserStatus(user._id, user.isBlocked, user.role)}
                             className={`px-2 py-1 rounded-md text-sm ${
-                              user.isBlocked 
-                                ? 'bg-green-600 text-white hover:bg-green-700' 
-                                : 'bg-red-600 text-white hover:bg-red-700'
+                              user.isBlocked ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700'
                             }`}
                           >
                             {user.isBlocked ? 'Unblock' : 'Block'}
@@ -689,7 +687,7 @@ const AdminDashboard = () => {
               </div>
               <button 
                 type="submit" 
-                className="bg-red-600 text-white px-4 py-2 rounded" 
+                className="bg-blue-600 text-white px-4 py-2 rounded" 
                 disabled={sending}
               >
                 {sending ? 'Sending...' : 'Send Notification'}
@@ -781,7 +779,7 @@ const AdminDashboard = () => {
                 }
               }}
               className={`flex items-center w-full px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                activeTab === item.id ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400' : ''
+                activeTab === item.id ? 'bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400' : ''
               }`}
             >
               <span className="mr-3">{item.icon}</span>
@@ -802,7 +800,7 @@ const AdminDashboard = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full md:w-auto px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Add User
               </button>
@@ -819,7 +817,7 @@ const AdminDashboard = () => {
         {/* Content Area */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4 md:p-6">
           {error && (
-            <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-4">
+            <div className="bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-4 py-3 rounded relative mb-4">
               {error}
             </div>
           )}

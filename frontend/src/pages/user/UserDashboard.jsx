@@ -602,7 +602,7 @@ const UserDashboard = () => {
       <header className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 bg-white shadow-sm rounded-xl p-3 sm:p-4">
         {/* Left Side - Profile and Username */}
         <div className="flex items-center gap-3 mb-3 sm:mb-0">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-600 flex items-center justify-center text-xl sm:text-2xl font-bold text-white">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center text-xl sm:text-2xl font-bold text-white">
             {getInitials(user?.name)}
           </div>
           <div className="flex flex-col">
@@ -613,14 +613,14 @@ const UserDashboard = () => {
 
         {/* Center - Company Name */}
         <div className="mb-3 sm:mb-0">
-          <h1 className="text-xl sm:text-2xl font-bold text-red-600 whitespace-nowrap text-center">Red Cat Hospitality Pvt Ltd</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-blue-600 whitespace-nowrap text-center">Red Cat Hospitality Pvt Ltd</h1>
         </div>
 
         {/* Right Side - Status, Notification, and Logout */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-2 bg-gray-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
-            <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isCheckedIn ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className={`text-xs sm:text-sm font-medium ${isCheckedIn ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isCheckedIn ? 'bg-green-500' : 'bg-blue-500'}`}></div>
+            <span className={`text-xs sm:text-sm font-medium ${isCheckedIn ? 'text-green-600' : 'text-blue-600'}`}>
               {isCheckedIn ? 'Checked In' : 'Not Checked In'}
             </span>
           </div>
@@ -634,7 +634,7 @@ const UserDashboard = () => {
           </button>
           <button
             onClick={handleLogout}
-            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >
             Logout
           </button>
@@ -652,7 +652,7 @@ const UserDashboard = () => {
         )}
 
         {/* Welcome Card with Live Time */}
-        <div className="bg-red-600 text-white p-4 sm:p-6 rounded-xl shadow-md">
+        <div className="bg-blue-600 text-white p-4 sm:p-6 rounded-xl shadow-md">
           <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Welcome back, {user?.name}!</h2>
           <div className="space-y-2">
             <p className="text-base sm:text-lg">{formatDateForDisplay(currentTime)}</p>
@@ -660,12 +660,12 @@ const UserDashboard = () => {
               {formatTimeForDisplay(currentTime)}
             </div>
             {isCheckedIn && checkInTime && (
-              <p className="text-xs sm:text-sm text-red-200">
+              <p className="text-xs sm:text-sm text-blue-200">
                 Checked in at {formatTimeForDisplay(checkInTime)}
               </p>
             )}
             {isCheckedOut && checkOutTime && (
-              <p className="text-xs sm:text-sm text-red-200">
+              <p className="text-xs sm:text-sm text-blue-200">
                 Checked out at {formatTimeForDisplay(checkOutTime)}
               </p>
             )}
@@ -677,7 +677,7 @@ const UserDashboard = () => {
               className={`px-3 sm:px-4 py-2 rounded-lg ${
                 isCheckedIn && !isCheckedOut
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-white text-red-600 hover:bg-gray-100'
+                : 'bg-white text-blue-600 hover:bg-gray-100'
               }`}
             >
               {isCheckedIn && !isCheckedOut ? 'Already Checked In' : 'Mark Attendance'}
@@ -688,7 +688,7 @@ const UserDashboard = () => {
               className={`px-3 sm:px-4 py-2 rounded-lg ${
                 !isCheckedIn || isCheckedOut || isLoading
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-white text-red-600 hover:bg-gray-100'
+                : 'bg-white text-blue-600 hover:bg-gray-100'
               }`}
             >
               {isLoading ? 'Processing...' : isCheckedOut ? 'Checked Out' : 'Check Out'}
@@ -743,7 +743,7 @@ const UserDashboard = () => {
                             onClick={captureImage}
                             disabled={!isWebcamReady}
                             className={`w-full mt-2 py-2 rounded-lg ${
-                              !isWebcamReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                              !isWebcamReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
                             } text-white`}
                           >
                             {!isWebcamReady ? 'Initializing Camera...' : 'Take Photo'}
@@ -779,7 +779,7 @@ const UserDashboard = () => {
                     className={`w-full mt-2 py-2 rounded-lg ${
                       isCameraEnabled
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
                     {isCameraEnabled ? 'Camera Enabled' : 'Enable Camera'}
@@ -809,7 +809,7 @@ const UserDashboard = () => {
                     className={`w-full mt-2 py-2 rounded-lg ${
                       isLocationEnabled
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
                     {isLocationEnabled ? 'Location Enabled' : 'Enable Location'}
@@ -830,7 +830,7 @@ const UserDashboard = () => {
                 className={`w-full py-2 sm:py-3 rounded-lg text-white font-medium ${
                   isLoading || !capturedImage || !isLocationEnabled
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-red-600 hover:bg-red-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
                 {isLoading ? 'Marking Attendance...' : 'Mark Attendance'}
@@ -838,7 +838,7 @@ const UserDashboard = () => {
 
               {message && (
                 <div className={`p-3 rounded-lg ${
-                  message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                  message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'
                 }`}>
                   <p className="text-sm">{message}</p>
                 </div>
@@ -905,7 +905,7 @@ const UserDashboard = () => {
               </p>
               <button
                 onClick={() => setShowSuccessPopup(false)}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:text-sm"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:text-sm"
               >
                 Close
               </button>

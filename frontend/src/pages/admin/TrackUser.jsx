@@ -71,7 +71,7 @@ const TrackUser = () => {
         </button>
       </div>
       {loading && <div className="mb-2 text-gray-500">Loading...</div>}
-      {error && <div className="mb-2 text-red-500">{error}</div>}
+      {error && <div className="mb-2 text-blue-500">{error}</div>}
       {userResults.length > 0 && (
         <div className="mb-4">
           <h3 className="font-semibold mb-2">Select a user:</h3>

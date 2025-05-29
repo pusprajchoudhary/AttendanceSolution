@@ -58,16 +58,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-600 to-red-800 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 p-4">
       <div className="w-full max-w-md transform transition-all duration-300 hover:scale-[1.02]">
         <div className="bg-white rounded-2xl shadow-2xl p-8 relative overflow-hidden">
           {/* Decorative Elements */}
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-100 rounded-full opacity-50"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-100 rounded-full opacity-50"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-100 rounded-full opacity-50"></div>
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-100 rounded-full opacity-50"></div>
           
           {/* Logo Section */}
           <div className="flex justify-center mb-8 relative">
-            <div className="w-28 h-28 rounded-full border-4 border-red-600 overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div className="w-28 h-28 rounded-full border-4 border-blue-600 overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
               <img 
                 src="/logo.jpg" 
                 alt="Company Logo" 
@@ -77,12 +77,12 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center mb-8 relative">
-            <h1 className="text-4xl font-bold text-red-600 mb-2 tracking-tight">Welcome Back</h1>
+            <h1 className="text-4xl font-bold text-blue-600 mb-2 tracking-tight">Welcome Back</h1>
             <p className="text-gray-600 text-lg">Sign in to your account</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg text-center animate-fade-in">
+            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded-lg text-center animate-fade-in">
               {error}
             </div>
           )}
@@ -100,7 +100,7 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={onChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your email"
                 />
               </div>
@@ -116,7 +116,7 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={onChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your password"
                 />
               </div>
@@ -130,7 +130,7 @@ const LoginPage = () => {
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={onChange}
-                className="h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded transition-all duration-200"
+                className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-200"
               />
               <label htmlFor="rememberMe" className="ml-3 block text-sm text-gray-700">
                 Remember me
@@ -140,7 +140,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-[1.02] ${
+              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
