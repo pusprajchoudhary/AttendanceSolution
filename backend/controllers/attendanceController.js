@@ -44,6 +44,10 @@ const getAddressFromCoordinates = async (latitude, longitude) => {
 
 const markAttendance = async (req, res) => {
   try {
+    console.log('Received attendance request - before validation:');
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
+
     console.log('Received attendance request:', {
       body: req.body,
       file: req.file,
