@@ -76,7 +76,7 @@ const UserChat = () => {
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-lg shadow-lg">
       {/* Chat Header */}
-      <div className="p-4 border-b bg-blue-600 text-white rounded-t-lg">
+      <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
         <h2 className="text-lg font-semibold">Chat with Admin</h2>
       </div>
 
@@ -116,7 +116,7 @@ const UserChat = () => {
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Send
           </button>

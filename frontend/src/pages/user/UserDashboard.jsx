@@ -628,13 +628,13 @@ const UserDashboard = () => {
           <NotificationButton />
           <button
             onClick={handleSendLocation}
-            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-colors"
           >
             Send My Location
           </button>
           <button
             onClick={handleLogout}
-            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-colors"
           >
             Logout
           </button>
@@ -652,7 +652,7 @@ const UserDashboard = () => {
         )}
 
         {/* Welcome Card with Live Time */}
-        <div className="bg-blue-600 text-white p-4 sm:p-6 rounded-xl shadow-md">
+        <div className="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-4 sm:p-6 rounded-xl shadow-md">
           <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Welcome back, {user?.name}!</h2>
           <div className="space-y-2">
             <p className="text-base sm:text-lg">{formatDateForDisplay(currentTime)}</p>
@@ -677,7 +677,7 @@ const UserDashboard = () => {
               className={`px-3 sm:px-4 py-2 rounded-lg ${
                 isCheckedIn && !isCheckedOut
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-white text-blue-600 hover:bg-gray-100'
+                : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
               }`}
             >
               {isCheckedIn && !isCheckedOut ? 'Already Checked In' : 'Mark Attendance'}
@@ -688,7 +688,7 @@ const UserDashboard = () => {
               className={`px-3 sm:px-4 py-2 rounded-lg ${
                 !isCheckedIn || isCheckedOut || isLoading
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-white text-blue-600 hover:bg-gray-100'
+                : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
               }`}
             >
               {isLoading ? 'Processing...' : isCheckedOut ? 'Checked Out' : 'Check Out'}
@@ -743,8 +743,8 @@ const UserDashboard = () => {
                             onClick={captureImage}
                             disabled={!isWebcamReady}
                             className={`w-full mt-2 py-2 rounded-lg ${
-                              !isWebcamReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                            } text-white`}
+                              !isWebcamReady ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
+                            }`}
                           >
                             {!isWebcamReady ? 'Initializing Camera...' : 'Take Photo'}
                           </button>
@@ -779,7 +779,7 @@ const UserDashboard = () => {
                     className={`w-full mt-2 py-2 rounded-lg ${
                       isCameraEnabled
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                     }`}
                   >
                     {isCameraEnabled ? 'Camera Enabled' : 'Enable Camera'}
@@ -809,7 +809,7 @@ const UserDashboard = () => {
                     className={`w-full mt-2 py-2 rounded-lg ${
                       isLocationEnabled
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                     }`}
                   >
                     {isLocationEnabled ? 'Location Enabled' : 'Enable Location'}
@@ -817,7 +817,7 @@ const UserDashboard = () => {
                   {/* Manual Send Location Button */}
                   <button
                     onClick={handleSendLocation}
-                    className="w-full mt-2 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                    className="w-full mt-2 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800"
                   >
                     Send My Location
                   </button>
@@ -830,7 +830,7 @@ const UserDashboard = () => {
                 className={`w-full py-2 sm:py-3 rounded-lg text-white font-medium ${
                   isLoading || !capturedImage || !isLocationEnabled
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    : 'bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-900'
                 }`}
               >
                 {isLoading ? 'Marking Attendance...' : 'Mark Attendance'}
@@ -905,7 +905,7 @@ const UserDashboard = () => {
               </p>
               <button
                 onClick={() => setShowSuccessPopup(false)}
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:text-sm"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-base font-medium text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none sm:text-sm"
               >
                 Close
               </button>

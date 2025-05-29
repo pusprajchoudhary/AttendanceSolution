@@ -130,7 +130,7 @@ const AdminChat = () => {
       {/* Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
-        <div className="p-4 border-b bg-blue-600 text-white">
+        <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               {selectedUser && (
@@ -178,7 +178,7 @@ const AdminChat = () => {
                       <div
                         className={`rounded-lg p-3 ${
                           isAdminMessage
-                            ? 'bg-blue-500 text-white rounded-br-none'
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none'
                             : 'bg-white text-gray-800 rounded-bl-none shadow-sm'
                         }`}
                       >
@@ -215,7 +215,7 @@ const AdminChat = () => {
             <button
               type="submit"
               disabled={!selectedUser}
-              className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             >
               Send
             </button>

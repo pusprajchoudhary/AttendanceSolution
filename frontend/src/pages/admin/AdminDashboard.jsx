@@ -547,7 +547,8 @@ const AdminDashboard = () => {
                           <button
                             onClick={() => handleToggleUserStatus(user._id, user.isBlocked, user.role)}
                             className={`px-2 py-1 rounded-md text-sm ${
-                              user.isBlocked ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+                              user.isBlocked ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800'
+                              : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                             }`}
                           >
                             {user.isBlocked ? 'Unblock' : 'Block'}
@@ -588,7 +589,7 @@ const AdminDashboard = () => {
                   <button
                     onClick={handleExportAttendance}
                     disabled={attendanceLoading || attendanceLogs.length === 0}
-                    className="w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {attendanceLoading ? 'Exporting...' : 'Export Attendance'}
                   </button>
@@ -687,7 +688,7 @@ const AdminDashboard = () => {
               </div>
               <button 
                 type="submit" 
-                className="bg-blue-600 text-white px-4 py-2 rounded" 
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded" 
                 disabled={sending}
               >
                 {sending ? 'Sending...' : 'Send Notification'}
@@ -800,7 +801,7 @@ const AdminDashboard = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full md:w-auto px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Add User
               </button>

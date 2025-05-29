@@ -30,7 +30,7 @@ const NotificationBanner = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white p-4 z-50">
+    <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex-1">
           {notifications.map((notification) => (

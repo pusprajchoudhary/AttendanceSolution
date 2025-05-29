@@ -88,7 +88,7 @@ const AdminDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <button
               onClick={handleLogout}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-blue-700"
             >
               Logout
             </button>
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
           <div className="mb-6">
             <button
               onClick={() => setShowAddUserModal(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-blue-700"
             >
               Add User
             </button>
@@ -212,7 +212,7 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-blue-700"
                 >
                   Add User
                 </button>
