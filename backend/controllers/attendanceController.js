@@ -63,7 +63,7 @@ const markAttendance = async (req, res) => {
 
     const { location } = req.body;
     const user = req.user._id;
-    const photo = req.file ? req.file.secure_url : null;
+    const photo = req.file ? (req.file.secure_url || req.file.path) : null;
 
     // Parse location from FormData fields if not a JSON string
     let parsedLocation;
