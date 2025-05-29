@@ -34,15 +34,17 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage }).single('image');
 
 // Error handling middleware for multer (still useful for file type/size errors)
 const handleMulterError = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     // Multer errors (like file size limits) will still be caught here
+    console.error('Multer Error:', err.message);
     return res.status(400).json({ message: err.message });
   } else if (err) {
-    // Other potential errors during upload
+    // Other potential errors during upload (e.g., Cloudinary errors)
+    console.error('File upload failed:', err.message);
     return res.status(500).json({ message: 'File upload failed', error: err.message });
   }
   next();
@@ -51,20 +53,19 @@ const handleMulterError = (err, req, res, next) => {
 // Base routes
 router.post('/mark', 
   protect, 
-  upload.single('image'),
   (req, res, next) => {
-    // Multer upload errors should be handled by handleMulterError middleware
-    if (!req.file) {
-       // If upload failed and no error from Multer, it could be a different issue, but 
-       // CloudinaryStorage usually throws an error captured by middleware.
-       // Keep this check for robustness, though handleMulterError is primary.
-       if (!req.multerError) { // Avoid sending duplicate error if multerError is set
-          return res.status(400).json({ message: 'Image upload failed or no image provided.' });
-       }
-    }
-    // If req.file exists, upload to Cloudinary was successful
-    // The file object now contains Cloudinary details, including secure_url
-    next();
+    upload(req, res, function (err) {
+      if (err) {
+        // Pass Multer/Cloudinary errors to the error handling middleware
+        req.multerError = err; // Attach error to request for middleware
+        return handleMulterError(err, req, res, next);
+      }
+      // If req.file is undefined but no Multer error, it could be a non-Multer issue or no file sent
+      if (!req.file) {
+         return res.status(400).json({ message: 'Image upload failed or no image provided.' });
+      }
+      next(); // Proceed to markAttendance controller
+    });
   },
   markAttendance
 );
