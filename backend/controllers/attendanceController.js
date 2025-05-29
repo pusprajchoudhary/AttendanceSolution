@@ -136,6 +136,8 @@ const markAttendance = async (req, res) => {
       status: 'checked-in'
     });
 
+    console.log('Result of existing attendance check:', existingAttendance);
+
     if (existingAttendance) {
       console.log('User already has active check-in:', existingAttendance);
       return res.status(400).json({ 
