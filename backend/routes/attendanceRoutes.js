@@ -12,51 +12,40 @@ const { protect, admin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const router = express.Router();
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'), false);
-  }
-};
-
-const upload = multer({ 
-  storage: storage,
-  limits: { 
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+// Configure Cloudinary storage for Multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'attendance_photos', // Optional: folder name in Cloudinary
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }]
   },
-  fileFilter: fileFilter
 });
 
-// Error handling middleware for multer
+const upload = multer({ storage: storage });
+
+// Error handling middleware for multer (still useful for file type/size errors)
 const handleMulterError = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ message: 'File size too large. Maximum size is 5MB.' });
-    }
+    // Multer errors (like file size limits) will still be caught here
     return res.status(400).json({ message: err.message });
+  } else if (err) {
+    // Other potential errors during upload
+    return res.status(500).json({ message: 'File upload failed', error: err.message });
   }
-  next(err);
+  next();
 };
 
 // Base routes
@@ -64,9 +53,17 @@ router.post('/mark',
   protect, 
   upload.single('image'),
   (req, res, next) => {
+    // Multer upload errors should be handled by handleMulterError middleware
     if (!req.file) {
-      return res.status(400).json({ message: 'Please upload an image' });
+       // If upload failed and no error from Multer, it could be a different issue, but 
+       // CloudinaryStorage usually throws an error captured by middleware.
+       // Keep this check for robustness, though handleMulterError is primary.
+       if (!req.multerError) { // Avoid sending duplicate error if multerError is set
+          return res.status(400).json({ message: 'Image upload failed or no image provided.' });
+       }
     }
+    // If req.file exists, upload to Cloudinary was successful
+    // The file object now contains Cloudinary details, including secure_url
     next();
   },
   markAttendance
@@ -81,7 +78,7 @@ router.get('/date/:date', protect, getAttendanceByDate);
 router.get('/:userId/location-history', protect, admin, getUserLocationHistory);
 router.put('/location/:recordId', protect, updateAttendanceLocation);
 
-// Error handling middleware
+// Error handling middleware for Multer and others
 router.use(handleMulterError);
 
 module.exports = router;
