@@ -113,8 +113,8 @@ const markAttendance = async (req, res) => {
 
     // Validate location data
     if (!parsedLocation.coordinates || 
-        !parsedLocation.coordinates.latitude || 
-        !parsedLocation.coordinates.longitude) {
+        typeof parsedLocation.coordinates.latitude !== 'number' || !parsedLocation.coordinates.latitude ||
+        typeof parsedLocation.coordinates.longitude !== 'number' || !parsedLocation.coordinates.longitude) {
       return res.status(400).json({
         message: 'Invalid location data',
         details: 'Location coordinates are missing or invalid'
