@@ -5,7 +5,7 @@ const allowedOrigins = [
   'https://attendance-solution-frontend.vercel.app',
   'https://attendance-solution.vercel.app',
   'https://lively-kashata-d2eb26.netlify.app',
-'https://attendancea2zinsures.netlify.app/',
+  'https://attendancea2zinsures.netlify.app',
   'http://localhost:5173',  // Add local development URL
   'http://localhost:3000'   // Add alternative local development URL
 ];
