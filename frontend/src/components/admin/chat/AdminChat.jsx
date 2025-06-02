@@ -75,19 +75,22 @@ const AdminChat = () => {
 
   // Get unique users from messages (only users who have ever messaged with admin)
   const uniqueUsers = [...new Set(messages
-    .filter(msg => msg.sender._id === user._id || msg.receiver._id === user._id)
-    .map(msg => msg.sender._id === user._id ? msg.receiver._id : msg.sender._id)
+    .filter(msg => msg?.sender?._id === user?._id || msg?.receiver?._id === user?._id)
+    .map(msg => msg?.sender?._id === user?._id ? msg?.receiver?._id : msg?.sender?._id)
   )].map(userId => {
     const userMessage = messages.find(msg => 
-      (msg.sender._id === userId && msg.receiver._id === user._id) || 
-      (msg.sender._id === user._id && msg.receiver._id === userId)
+      (msg?.sender?._id === userId && msg?.receiver?._id === user?._id) || 
+      (msg?.sender?._id === user?._id && msg?.receiver?._id === userId)
     );
+    
+    if (!userMessage) return null;
+    
     return {
       _id: userId,
-      name: userMessage.sender._id === userId ? userMessage.sender.name : userMessage.receiver.name,
-      email: userMessage.sender._id === userId ? userMessage.sender.email : userMessage.receiver.email
+      name: userMessage.sender?._id === userId ? userMessage.sender?.name : userMessage.receiver?.name,
+      email: userMessage.sender?._id === userId ? userMessage.sender?.email : userMessage.receiver?.email
     };
-  });
+  }).filter(Boolean); // Remove any null entries
 
   if (loading) {
     return (
