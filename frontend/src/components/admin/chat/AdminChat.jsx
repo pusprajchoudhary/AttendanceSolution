@@ -43,10 +43,10 @@ const AdminChat = () => {
   const handleUserSelect = async (userId) => {
     setSelectedUser(userId);
     const userMessages = messages.filter(msg => 
-      (msg.sender._id === userId && msg.receiver._id === user._id) || 
-      (msg.sender._id === user._id && msg.receiver._id === userId)
+      (msg?.sender?._id === userId && msg?.receiver?._id === user?._id) || 
+      (msg?.sender?._id === user?._id && msg?.receiver?._id === userId)
     );
-    if (userMessages.length > 0) {
+    if (userMessages.length > 0 && userMessages[0]?._id) {
       await markAsRead(userMessages[0]._id);
     }
   };
@@ -118,11 +118,13 @@ const AdminChat = () => {
             >
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 font-bold">{user.name[0]}</span>
+                  <span className="text-blue-600 font-bold">
+                    {user?.name?.[0]?.toUpperCase() || 'U'}
+                  </span>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-medium text-gray-800">{user?.name || 'Unknown User'}</p>
+                  <p className="text-sm text-gray-500">{user?.email || 'No email'}</p>
                 </div>
               </div>
             </button>
@@ -160,19 +162,19 @@ const AdminChat = () => {
           {selectedUser ? (
             messages
               .filter(msg => 
-                (msg.sender._id === selectedUser && msg.receiver._id === user._id) || 
-                (msg.sender._id === user._id && msg.receiver._id === selectedUser)
+                (msg?.sender?._id === selectedUser && msg?.receiver?._id === user?._id) || 
+                (msg?.sender?._id === user?._id && msg?.receiver?._id === selectedUser)
               )
-              .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+              .sort((a, b) => new Date(a?.timestamp || 0) - new Date(b?.timestamp || 0))
               .map((message, index, filteredMessages) => {
-                const isSameSender = index > 0 && filteredMessages[index - 1].sender._id === message.sender._id;
+                const isSameSender = index > 0 && filteredMessages[index - 1]?.sender?._id === message?.sender?._id;
                 const showTimestamp = index === filteredMessages.length - 1 || 
-                  filteredMessages[index + 1].sender._id !== message.sender._id;
-                const isAdminMessage = message.sender._id === user._id;
+                  filteredMessages[index + 1]?.sender?._id !== message?.sender?._id;
+                const isAdminMessage = message?.sender?._id === user?._id;
 
                 return (
                   <div
-                    key={message._id}
+                    key={message?._id || index}
                     className={`flex ${isAdminMessage ? 'justify-end' : 'justify-start'} ${
                       isSameSender ? 'mt-1' : 'mt-4'
                     }`}
@@ -185,9 +187,9 @@ const AdminChat = () => {
                             : 'bg-white text-gray-800 rounded-bl-none shadow-sm'
                         }`}
                       >
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm">{message?.content || 'Message content unavailable'}</p>
                       </div>
-                      {showTimestamp && (
+                      {showTimestamp && message?.timestamp && (
                         <span className={`text-xs mt-1 ${isAdminMessage ? 'text-right' : 'text-left'} text-gray-500`}>
                           {format(new Date(message.timestamp), 'h:mm a')}
                         </span>
