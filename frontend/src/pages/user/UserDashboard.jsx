@@ -612,7 +612,7 @@ const UserDashboard = () => {
 
         {/* Center - Company Name */}
         <div className="mb-3 sm:mb-0">
-          <h1 className="text-xl sm:text-2xl font-bold text-blue-600 whitespace-nowrap text-center">Red Cat Hospitality Pvt Ltd</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-blue-600 whitespace-nowrap text-center">A2Z Finserve Insurance Marketing LLP</h1>
         </div>
 
         {/* Right Side - Status, Notification, and Logout */}
