@@ -25,12 +25,18 @@ const UserChat = () => {
 
   const initializeChat = async () => {
     try {
+      console.log('Initializing chat...');
       const adminId = await getAdminId();
+      console.log('Admin ID received in component:', adminId);
       setAdminId(adminId);
       await fetchMessages();
     } catch (error) {
-      console.error('Error initializing chat:', error);
-      toast.error('Failed to initialize chat');
+      console.error('Error initializing chat:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      toast.error('Failed to initialize chat: ' + error.message);
     }
   };
 
@@ -52,9 +58,22 @@ const UserChat = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user?._id || !adminId) return;
+    if (!newMessage.trim() || !user?._id || !adminId) {
+      console.log('Cannot send message:', {
+        hasMessage: !!newMessage.trim(),
+        hasUserId: !!user?._id,
+        hasAdminId: !!adminId
+      });
+      return;
+    }
 
     try {
+      console.log('Sending message with data:', {
+        content: newMessage.substring(0, 50),
+        receiverId: adminId,
+        userId: user._id
+      });
+
       const messageData = {
         content: newMessage,
         receiverId: adminId
@@ -62,10 +81,15 @@ const UserChat = () => {
       
       await sendMessage(messageData);
       setNewMessage('');
-      fetchMessages();
+      await fetchMessages();
+      toast.success('Message sent successfully');
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error(error.response?.data?.message || 'Failed to send message');
+      console.error('Error sending message:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      toast.error(error.message || 'Failed to send message');
     }
   };
 

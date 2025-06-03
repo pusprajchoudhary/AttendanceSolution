@@ -58,18 +58,51 @@ export const getMessagesByDate = async (startDate, endDate) => {
 // Send a new message
 export const sendMessage = async (messageData) => {
   try {
-    if (!messageData.receiverId) {
-      throw new Error('Receiver ID is required');
+    console.log('Attempting to send message:', {
+      hasContent: !!messageData.content,
+      hasReceiverId: !!messageData.receiverId,
+      receiverId: messageData.receiverId,
+      content: messageData.content?.substring(0, 50) // Log first 50 chars
+    });
+
+    if (!messageData.content || !messageData.receiverId) {
+      throw new Error('Message content and receiver ID are required');
+    }
+
+    // Ensure receiverId is a valid MongoDB ObjectId
+    if (!/^[0-9a-fA-F]{24}$/.test(messageData.receiverId)) {
+      throw new Error('Invalid receiver ID format');
     }
 
     const response = await axiosWithAuth.post(`${API_URL}/messages/send`, {
       content: messageData.content,
       receiverId: messageData.receiverId
     });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to send message');
+    }
+
+    console.log('Message sent successfully:', {
+      messageId: response.data.data._id,
+      threadId: response.data.data.threadId,
+      sender: response.data.data.sender?.name,
+      receiver: response.data.data.receiver?.name
+    });
+
     return response.data.data;
   } catch (error) {
+    console.error('Error sending message:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      data: error.response?.data
+    });
+
     if (error.response?.status === 400) {
-      throw new Error(error.response.data.message || 'Invalid receiver ID. Please contact support.');
+      throw new Error(error.response.data.message || 'Invalid message data');
+    }
+    if (error.response?.status === 403) {
+      throw new Error('You are not authorized to send messages');
     }
     throw error;
   }
@@ -119,7 +152,10 @@ export const getAdminId = async (retries = 3) => {
       console.log(`Attempt ${i + 1} to get admin ID...`);
       const response = await axiosWithAuth.get(`${API_URL}/users/admin`);
       
+      console.log('Admin response:', response.data);
+      
       if (!response.data?.data?._id) {
+        console.error('Invalid admin data received:', response.data);
         throw new Error('Invalid admin data received');
       }
 
@@ -128,14 +164,20 @@ export const getAdminId = async (retries = 3) => {
       
       // Validate admin ID format
       if (!/^[0-9a-fA-F]{24}$/.test(adminId)) {
+        console.error('Invalid admin ID format:', adminId);
         throw new Error('Invalid admin ID format');
       }
 
       return adminId;
     } catch (error) {
-      console.error(`Attempt ${i + 1} failed to get admin ID:`, error);
+      console.error(`Attempt ${i + 1} failed to get admin ID:`, {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
       if (i === retries - 1) {
-        throw new Error('Failed to get admin ID after multiple attempts');
+        throw new Error(`Failed to get admin ID after ${retries} attempts: ${error.message}`);
       }
       // Wait for 1 second before retrying
       await new Promise(resolve => setTimeout(resolve, 1000));
