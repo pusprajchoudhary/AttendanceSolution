@@ -21,9 +21,9 @@ const getUserId = () => {
   return user._id;
 };
 
-// Configure axios with auth header
+// Create axios instance with auth header
 const axiosWithAuth = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://attendance-solution-backend.onrender.com',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -40,18 +40,43 @@ axiosWithAuth.interceptors.request.use(
   }
 );
 
-// Get messages by date range
-export const getMessagesByDate = async (startDate, endDate) => {
-  try {
-    const response = await axiosWithAuth.get(`${API_URL}/messages/by-date`, {
-      params: { 
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
+// Get admin ID with retry logic
+export const getAdminId = async (retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`Attempt ${i + 1} to get admin ID...`);
+      const response = await axiosWithAuth.get(`${API_URL}/users/admin`);
+      
+      console.log('Admin response:', response.data);
+      
+      if (!response.data?.data?._id) {
+        console.error('Invalid admin data received:', response.data);
+        throw new Error('Invalid admin data received');
       }
-    });
-    return response.data.data;
-  } catch (error) {
-    throw error;
+
+      const adminId = response.data.data._id;
+      console.log('Admin ID received:', adminId);
+      
+      // Validate admin ID format
+      if (!/^[0-9a-fA-F]{24}$/.test(adminId)) {
+        console.error('Invalid admin ID format:', adminId);
+        throw new Error('Invalid admin ID format');
+      }
+
+      return adminId;
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed to get admin ID:`, {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      if (i === retries - 1) {
+        throw new Error(`Failed to get admin ID after ${retries} attempts: ${error.message}`);
+      }
+      // Wait for 1 second before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 };
 
@@ -108,18 +133,6 @@ export const sendMessage = async (messageData) => {
   }
 };
 
-// Mark messages as read
-export const markAsRead = async (messageIds) => {
-  try {
-    const response = await axiosWithAuth.post(`${API_URL}/messages/mark-read`, {
-      messageIds: Array.isArray(messageIds) ? messageIds : [messageIds]
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 // Get messages for a thread
 export const getMessages = async () => {
   try {
@@ -134,6 +147,33 @@ export const getMessages = async () => {
   }
 };
 
+// Get messages by date range
+export const getMessagesByDate = async (startDate, endDate) => {
+  try {
+    const response = await axiosWithAuth.get(`${API_URL}/messages/by-date`, {
+      params: { 
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      }
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Mark messages as read
+export const markAsRead = async (messageIds) => {
+  try {
+    const response = await axiosWithAuth.post(`${API_URL}/messages/mark-read`, {
+      messageIds: Array.isArray(messageIds) ? messageIds : [messageIds]
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Get unread message count
 export const getUnreadCount = async () => {
   try {
@@ -142,45 +182,5 @@ export const getUnreadCount = async () => {
   } catch (error) {
     console.error('Error getting unread count:', error);
     throw error;
-  }
-};
-
-// Get admin ID with retry logic
-export const getAdminId = async (retries = 3) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      console.log(`Attempt ${i + 1} to get admin ID...`);
-      const response = await axiosWithAuth.get(`${API_URL}/users/admin`);
-      
-      console.log('Admin response:', response.data);
-      
-      if (!response.data?.data?._id) {
-        console.error('Invalid admin data received:', response.data);
-        throw new Error('Invalid admin data received');
-      }
-
-      const adminId = response.data.data._id;
-      console.log('Admin ID received:', adminId);
-      
-      // Validate admin ID format
-      if (!/^[0-9a-fA-F]{24}$/.test(adminId)) {
-        console.error('Invalid admin ID format:', adminId);
-        throw new Error('Invalid admin ID format');
-      }
-
-      return adminId;
-    } catch (error) {
-      console.error(`Attempt ${i + 1} failed to get admin ID:`, {
-        error: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      
-      if (i === retries - 1) {
-        throw new Error(`Failed to get admin ID after ${retries} attempts: ${error.message}`);
-      }
-      // Wait for 1 second before retrying
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
   }
 }; 

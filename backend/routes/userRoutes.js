@@ -4,6 +4,34 @@ const User = require('../models/UserModel');
 const bcrypt = require('bcryptjs');
 const { protect, admin } = require('../middleware/authMiddleware');
 
+// Get admin user
+router.get('/admin', protect, async (req, res) => {
+  try {
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (!adminUser) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'No admin user found' 
+      });
+    }
+    res.json({
+      success: true,
+      data: {
+        _id: adminUser._id,
+        name: adminUser.name,
+        email: adminUser.email,
+        role: adminUser.role
+      }
+    });
+  } catch (error) {
+    console.error('Error getting admin user:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error getting admin user' 
+    });
+  }
+});
+
 // Get all users (admin only)
 router.get('/', protect, admin, async (req, res) => {
   try {

@@ -117,42 +117,61 @@ const UserChat = () => {
       </div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`flex ${message.sender._id === user._id ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                message.sender._id === user._id
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
-            >
-              <p className="text-sm">{message.content}</p>
-              <p className="text-xs mt-1 opacity-70">
-                {new Date(message.timestamp).toLocaleTimeString()}
-              </p>
-            </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+        {messages.length > 0 ? (
+          messages.map((message, index) => {
+            const isSameSender = index > 0 && messages[index - 1].sender._id === message.sender._id;
+            const showTimestamp = index === messages.length - 1 || 
+              messages[index + 1].sender._id !== message.sender._id;
+            const isAdminMessage = message.sender._id === adminId;
+
+            return (
+              <div
+                key={message._id}
+                className={`flex ${isAdminMessage ? 'justify-start' : 'justify-end'} ${
+                  isSameSender ? 'mt-1' : 'mt-4'
+                }`}
+              >
+                <div className="flex flex-col max-w-[70%]">
+                  <div
+                    className={`rounded-lg p-3 ${
+                      isAdminMessage
+                        ? 'bg-white text-gray-800 rounded-bl-none shadow-sm'
+                        : 'bg-blue-500 text-white rounded-br-none'
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                  </div>
+                  {showTimestamp && (
+                    <span className={`text-xs mt-1 ${isAdminMessage ? 'text-left' : 'text-right'} text-gray-500`}>
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            No messages yet. Start the conversation!
           </div>
-        ))}
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Message Input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
+      <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
         <div className="flex space-x-2">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Send
           </button>
