@@ -7,7 +7,7 @@ import { markAttendance, markCheckout, getTodayAttendance, updateAttendanceLocat
 import { getLatestNotification, markNotificationAsRead } from '../../services/notificationService';
 import NotificationButton from '../../components/NotificationButton';
 import { startLocationTracking } from '../../services/locationService';
-import UserChat from '../../components/chat/UserChat';
+import UserChat from '../../components/user/chat/UserChat';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
