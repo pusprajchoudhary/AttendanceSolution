@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { sendMessage, getMessages } from '../../../services/chatService';
+import { sendMessage, getMessages, getAdminId } from '../../../services/chatService';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -8,6 +8,7 @@ const UserChat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [adminId, setAdminId] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -16,11 +17,22 @@ const UserChat = () => {
 
   useEffect(() => {
     if (user?._id) {
-      fetchMessages();
+      initializeChat();
       const interval = setInterval(fetchMessages, 5000);
       return () => clearInterval(interval);
     }
   }, [user]);
+
+  const initializeChat = async () => {
+    try {
+      const adminId = await getAdminId();
+      setAdminId(adminId);
+      await fetchMessages();
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+      toast.error('Failed to initialize chat');
+    }
+  };
 
   useEffect(() => {
     scrollToBottom();
@@ -40,12 +52,12 @@ const UserChat = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user?._id) return;
+    if (!newMessage.trim() || !user?._id || !adminId) return;
 
     try {
       const messageData = {
         content: newMessage,
-        receiverId: 'admin' // This should be the actual admin ID
+        receiverId: adminId
       };
       
       await sendMessage(messageData);

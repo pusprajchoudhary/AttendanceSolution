@@ -110,4 +110,35 @@ export const getUnreadCount = async () => {
     console.error('Error getting unread count:', error);
     throw error;
   }
+};
+
+// Get admin ID with retry logic
+export const getAdminId = async (retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`Attempt ${i + 1} to get admin ID...`);
+      const response = await axiosWithAuth.get(`${API_URL}/users/admin`);
+      
+      if (!response.data?.data?._id) {
+        throw new Error('Invalid admin data received');
+      }
+
+      const adminId = response.data.data._id;
+      console.log('Admin ID received:', adminId);
+      
+      // Validate admin ID format
+      if (!/^[0-9a-fA-F]{24}$/.test(adminId)) {
+        throw new Error('Invalid admin ID format');
+      }
+
+      return adminId;
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed to get admin ID:`, error);
+      if (i === retries - 1) {
+        throw new Error('Failed to get admin ID after multiple attempts');
+      }
+      // Wait for 1 second before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
 }; 
