@@ -7,14 +7,85 @@ const sendMessage = async (req, res) => {
     const { content, receiverId } = req.body;
     const senderId = req.user._id;
 
-    // Validate receiver exists
-    const receiver = await User.findById(receiverId);
+    console.log('Message sending attempt:', {
+      senderId,
+      receiverId,
+      content: content?.substring(0, 50) // Log first 50 chars of content
+    });
+
+    // Validate input
+    if (!content || !receiverId) {
+      console.log('Invalid input:', { content: !!content, receiverId: !!receiverId });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Content and receiver ID are required' 
+      });
+    }
+
+    // Get sender details
+    const sender = await User.findOne({ 
+      _id: senderId,
+      isBlocked: false 
+    });
+
+    console.log('Sender lookup result:', {
+      found: !!sender,
+      senderId,
+      role: sender?.role,
+      isBlocked: sender?.isBlocked,
+      name: sender?.name
+    });
+
+    if (!sender) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Your account is blocked' 
+      });
+    }
+
+    // Get receiver details
+    const receiver = await User.findOne({ _id: receiverId });
+    console.log('Receiver lookup result:', {
+      found: !!receiver,
+      receiverId,
+      role: receiver?.role,
+      isBlocked: receiver?.isBlocked,
+      name: receiver?.name
+    });
+
     if (!receiver) {
-      return res.status(400).json({ message: 'Invalid receiver' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid receiver: User not found' 
+      });
+    }
+
+    if (receiver.isBlocked) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Receiver is blocked' 
+      });
+    }
+
+    // Role-based validation
+    if (sender.role === 'user' && receiver.role !== 'admin') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Users can only message admins' 
+      });
+    }
+
+    if (sender.role === 'admin' && receiver.role !== 'user') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Admins can only message users' 
+      });
     }
 
     // Create threadId (combination of sender and receiver IDs)
     const threadId = [senderId, receiverId].sort().join('_');
+
+    console.log('Creating message with threadId:', threadId);
 
     const message = new Message({
       sender: senderId,
@@ -28,6 +99,13 @@ const sendMessage = async (req, res) => {
     // Populate sender and receiver details
     await message.populate('sender', 'name email');
     await message.populate('receiver', 'name email');
+
+    console.log('Message saved successfully:', {
+      messageId: message._id,
+      threadId: message.threadId,
+      sender: message.sender.name,
+      receiver: message.receiver.name
+    });
 
     res.status(201).json({
       success: true,
