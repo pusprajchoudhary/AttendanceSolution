@@ -596,7 +596,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100" style={{ scrollBehavior: 'smooth' }}>
+    <div className="min-h-screen bg-gray-100">
       {/* Header section */}
       <header className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 bg-white shadow-sm rounded-xl p-3 sm:p-4">
         {/* Left Side - Profile and Username */}
@@ -847,7 +847,7 @@ const UserDashboard = () => {
         )}
 
         {/* Add Chat Section */}
-        <div className="mt-8">
+        <div className="mt-8" id="chat-section">
           <h2 className="text-2xl font-bold mb-4">Chat with Admin</h2>
           <UserChat />
         </div>
