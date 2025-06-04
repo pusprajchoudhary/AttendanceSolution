@@ -10,9 +10,12 @@ const UserChat = () => {
   const [loading, setLoading] = useState(true);
   const [adminId, setAdminId] = useState(null);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -41,7 +44,9 @@ const UserChat = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   const fetchMessages = async () => {
@@ -117,7 +122,11 @@ const UserChat = () => {
       </div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+        style={{ scrollBehavior: 'smooth' }}
+      >
         {messages.length > 0 ? (
           messages.map((message, index) => {
             const isSameSender = index > 0 && messages[index - 1].sender._id === message.sender._id;
